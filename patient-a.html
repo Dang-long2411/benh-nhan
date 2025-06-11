@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Lý Lịch Bệnh Nhân</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            background-color: #ffffff;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 24px;
+        }
+
+        .info-group {
+            margin-bottom: 16px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .value {
+            color: #111827;
+            margin-top: 4px;
+            padding-left: 10px;
+        }
+
+        .info-group:not(:last-child) {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 12px;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lý Lịch Bệnh Nhân</h1>
+
+        <div class="info-group">
+            <div class="label">Họ và tên:</div>
+            <div class="value">Nguyễn Văn A</div>
+        </div>
+
+        <div class="info-group">
+            <div class="label">Ngày sinh:</div>
+            <div class="value">01/01/1980</div>
+        </div>
+
+        <div class="info-group">
+            <div class="label">CMND/CCCD:</div>
+            <div class="value">123456789</div>
+        </div>
+
+        <div class="info-group">
+            <div class="label">Tiền sử bệnh:</div>
+            <div class="value">Cao huyết áp, tiểu đường</div>
+        </div>
+
+        <div class="info-group">
+            <div class="label">Thuốc đang dùng:</div>
+            <div class="value">Amlodipin, Metformin</div>
+        </div>
+
+        <div class="info-group">
+            <div class="label">Ghi chú:</div>
+            <div class="value">Cần kiểm tra định kỳ hàng tháng</div>
+        </div>
+    </div>
+</body>
+</html>
