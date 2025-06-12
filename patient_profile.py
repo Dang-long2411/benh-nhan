@@ -1,66 +1,114 @@
 import pandas as pd
-import os
-import re
-from jinja2 import Template
+import json
 
-# === File Excel đầu vào ===
-INPUT_FILE = r'C:\Users\DELL\Desktop\benh_nhan.xlsx' 
-OUTPUT_FOLDER = 'output_html'
+df = pd.read_excel(r"C:\Users\DELL\Desktop\benh_nhan.xlsx")
+df = df.astype(str)
+patients = df.to_dict(orient="records")
 
-# === Mẫu HTML đơn giản ===
-html_template = """
+html_template = f"""
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Lý lịch bệnh nhân</title>
+    <title>Hồ sơ bệnh nhân</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: #f1f5f9; padding: 30px; }
-        .card { background: #fff; padding: 25px; border-radius: 12px; max-width: 600px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);}
-        h1 { text-align: center; color: #1e293b; }
-        .field { margin: 12px 0; }
-        .label { font-weight: bold; color: #334155; }
+        body {{
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #e0f7fa, #e0f2f1);
+            margin: 0;
+            padding: 40px 0;
+        }}
+        .card {{
+            background: white;
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }}
+        .card:hover {{
+            transform: scale(1.01);
+        }}
+        h2 {{
+            color: #00796b;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }}
+        p {{
+            margin: 12px 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }}
+        strong {{
+            color: #333;
+        }}
+        .nav {{
+            text-align: center;
+            margin-top: 30px;
+        }}
+        button {{
+            background-color: #009688;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            margin: 0 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }}
+        button:hover {{
+            background-color: #00796b;
+        }}
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Lý Lịch Bệnh Nhân</h1>
-        <div class="field"><span class="label">Họ tên:</span> {{ ho_ten }}</div>
-        <div class="field"><span class="label">Ngày sinh:</span> {{ ngay_sinh }}</div>
-        <div class="field"><span class="label">CCCD:</span> {{ cccd }}</div>
-        <div class="field"><span class="label">Tiền sử bệnh:</span> {{ tien_su }}</div>
-        <div class="field"><span class="label">Thuốc:</span> {{ thuoc }}</div>
+    <div class="card" id="profileCard">
+        <h2 id="hoTen">Họ tên bệnh nhân</h2>
+        <p><strong>Ngày sinh:</strong> <span id="ngaySinh"></span></p>
+        <p><strong>CCCD:</strong> <span id="Cccd"></span></p>
+        <p><strong>Tiền sử:</strong> <span id="tienSu"></span></p>
+        <p><strong>Thuốc:</strong> <span id="Thuoc"></span></p>
     </div>
+    <div class="nav">
+        <button onclick="prevPatient()">← Trước</button>
+        <button onclick="nextPatient()">Sau →</button>
+    </div>
+
+    <script>
+        const patients = {json.dumps(patients, ensure_ascii=False)};
+        let index = 0;
+
+        function showPatient(i) {{
+            const p = patients[i];
+            document.getElementById('hoTen').textContent = p.ho_ten || 'Không có';
+            document.getElementById('ngaySinh').textContent = p.ngay_sinh || '';
+            document.getElementById('Cccd').textContent = p.cccd || '';
+            document.getElementById('tienSu').textContent = p.tien_su || '';
+            document.getElementById('Thuoc').textContent = p.thuoc || '';
+        }}
+
+        function prevPatient() {{
+            index = (index - 1 + patients.length) % patients.length;
+            showPatient(index);
+        }}
+
+        function nextPatient() {{
+            index = (index + 1) % patients.length;
+            showPatient(index);
+        }}
+
+        showPatient(index);
+    </script>
 </body>
 </html>
 """
 
-# === Hàm tạo tên file từ họ tên ===
-def to_filename(name):
-    name = name.lower()
-    name = re.sub(r'[^\w\s-]', '', name)
-    return '-'.join(name.strip().split())
+OUTPUT_FILE = "C:/Users/DELL/Desktop/patient_profile.html"
+with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    f.write(html_template)
 
-# === Đọc file Excel ===
-df = pd.read_excel(INPUT_FILE)
+print("✅ Đã tạo file HTML đẹp:", OUTPUT_FILE)
 
-# === Tạo thư mục chứa HTML ===
-os.makedirs(OUTPUT_FOLDER, exist_ok=True)
-
-# === Biên dịch mẫu HTML ===
-template = Template(html_template)
-
-# === Tạo HTML cho từng bệnh nhân ===
-for _, row in df.iterrows():
-    file_name = to_filename(row["ho_ten"]) + ".html"
-    html_content = template.render(
-        ho_ten=row["ho_ten"],
-        ngay_sinh=row["ngay_sinh"],
-        cccd=row["cccd"],
-        tien_su=row["tien_su"],
-        thuoc=row["thuoc"]
-    )
-    with open(os.path.join(OUTPUT_FOLDER, file_name), "w", encoding="utf-8") as f:
-        f.write(html_content)
-
-print(f"✅ Đã tạo {len(df)} trang HTML trong thư mục '{OUTPUT_FOLDER}'")
